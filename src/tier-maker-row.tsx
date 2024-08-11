@@ -1,47 +1,40 @@
-import { cn } from './cn'
-import { DragEvent, Dispatch, SetStateAction, useState } from 'react'
-import { TierListItem } from './tlh'
+import { cn } from './utils'
+import { DragEvent } from 'react'
+import { TierListItem, useTierMakerStore } from './tier-maker-store'
 
-export function TLR({
+export function TierMakerRow({
   label,
   tier,
-  asign,
-  items,
   labelClassName,
-  draggingItem,
-  setDraggingItem
 }: {
   label: string,
-  asign: (id: string, tier: string) => void,
-  setDraggingItem: Dispatch<SetStateAction<TierListItem | null>>,
-  draggingItem: TierListItem | null,
   tier: string,
-  items: TierListItem[]
   labelClassName?: string,
 }) {
-  const [showPreview, setShowPreview] = useState(false)
+  const { items, asign, preview, setPreview } = useTierMakerStore()
 
   function handleDrop(event: DragEvent<HTMLElement>): void {
     event.preventDefault()
     asign(event.dataTransfer.getData('text/plain'), tier)
-    setShowPreview(false)
-    setDraggingItem(null)
+    setPreview(null)
   }
 
   function handleDragOver(event: DragEvent<HTMLElement>): void {
     event.preventDefault()
-    setShowPreview(true)
+    setPreview({ item: preview?.item ?? null, on: tier })
   }
 
   function handleDragLeave(event: DragEvent<HTMLElement>): void {
     event.preventDefault()
-    setShowPreview(false)
+    setPreview({ item: preview?.item ?? null, on: null })
   }
 
   function handleDragStart(item: TierListItem, event: DragEvent<HTMLImageElement>): void {
-    setDraggingItem(item)
     event.dataTransfer.setData('text/plain', item.id)
+    setPreview({ item, on: null })
   }
+
+  const showPreview = preview?.item != null && preview?.item?.tier !== tier && preview?.on === tier
 
   return (
     <section
@@ -68,9 +61,9 @@ export function TLR({
             />
           )
         })}
-        {showPreview && draggingItem?.tier !== tier && (
+        {showPreview && (
           <img
-            src={draggingItem?.src}
+            src={preview?.item?.src}
             className='size-16 object-cover pointer-events-none'
           />
         )}

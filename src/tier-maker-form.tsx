@@ -1,32 +1,15 @@
-import { ChangeEvent, Dispatch, DragEvent, RefObject, SetStateAction, useState } from 'react'
+import { ChangeEvent, DragEvent, RefObject } from 'react'
 import { IconArrowDown, IconPhotoDown, IconPhotoPlus, IconRestore } from '@tabler/icons-react'
-import { TierListItem } from './tlh'
+import { TierListItem, useTierMakerStore } from './tier-maker-store'
+import { parseFiles } from './utils'
 import html2canvas from 'html2canvas-pro'
 
-export function TLF(
-  { items, load, reset, asign, unasignAll, setDraggingItem, draggingItem, tiersRef }:
-  { items: TierListItem[], load: (sources: string[]) => void, reset: () => void, asign: (id: string, tier?: string) => void, unasignAll: () => void, setDraggingItem: Dispatch<SetStateAction<TierListItem | null>>, draggingItem: TierListItem | null, tiersRef: RefObject<HTMLUListElement> }
-) {
-  const [showPreview, setShowPreview] = useState(false)
-
-  async function parseFiles(files: File[]): Promise<string[]> {
-    const filesUrlsPromise = files.map(file => {
-      return new Promise<string | null>(resolve => {
-        const reader = new FileReader()
-        reader.addEventListener(
-          'loadend',
-          () => {
-            resolve(typeof reader.result === 'string' ? reader.result : null)
-          },
-          false
-        )
-        reader.readAsDataURL(file)
-      })
-    })
-
-    const images = await Promise.all(filesUrlsPromise)
-    return images.filter(Boolean) as string[]
-  }
+export function TierMakerForm({
+  tiersRef
+}: {
+  tiersRef: RefObject<HTMLUListElement>
+}) {
+  const { items, preview, load, asign, reset, unasignAll, setPreview } = useTierMakerStore()
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>): void {
     const { files } = event.target
@@ -42,23 +25,22 @@ export function TLF(
       parseFiles(Array.from(event.dataTransfer.files ?? []))
         .then(load)
     }
-    setShowPreview(false)
-    setDraggingItem(null)
+    setPreview(null)
   }
 
   function handleDragOver(event: DragEvent<HTMLDivElement>): void {
     event.preventDefault()
-    setShowPreview(true)
+    setPreview({ item: preview?.item ?? null, on: undefined })
   }
 
   function handleDragLeave(event: DragEvent<HTMLDivElement>): void {
     event.preventDefault()
-    setShowPreview(false)
+    setPreview({ item: preview?.item ?? null, on: null })
   }
 
   function handleDragStart(item: TierListItem, event: DragEvent<HTMLImageElement>): void {
     event.dataTransfer.setData('text/plain', item.id)
-    setDraggingItem(item)
+    setPreview({ item, on: null })
   }
 
   function download() {
@@ -69,6 +51,8 @@ export function TLF(
       link.click()
     })
   }
+
+  const showPreview = preview?.item != null && preview?.item?.tier !== undefined && preview?.on === undefined
 
   return (
     <form className='flex flex-1 flex-col p-2'>
@@ -106,9 +90,9 @@ export function TLF(
             />
           )
         })}
-        {showPreview && draggingItem?.tier !== undefined && (
+        {showPreview && (
           <img
-            src={draggingItem.src}
+            src={preview?.item?.src}
             className='size-16 object-cover pointer-events-none'
           />
         )}

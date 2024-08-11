@@ -1,6 +1,6 @@
-import { TLF } from './tlf'
-import { useTierList } from './tlh'
-import { TLR } from './tlr'
+import { useRef } from 'react'
+import { TierMakerForm } from './tier-maker-form'
+import { TierMakerRow } from './tier-maker-row'
 
 const tiers = [
   { label: 'S', className: 'bg-red-400' },
@@ -11,7 +11,7 @@ const tiers = [
 ]
 
 function App() {
-  const { items, draggingItem, tiersRef, setDraggingItem, load, asign, reset, unasignAll } = useTierList()
+  const tiersRef = useRef<HTMLUListElement>(null)
 
   return (
     <main className='flex flex-col h-screen'>
@@ -21,11 +21,15 @@ function App() {
       <ul ref={tiersRef} className='*:border-t'>
         {tiers.map(({ label, className }) => (
           <li key={label} className='last:border-b'>
-            <TLR asign={asign} tier={label} items={items} draggingItem={draggingItem} setDraggingItem={setDraggingItem} label={label} labelClassName={className} />
+            <TierMakerRow 
+              tier={label} 
+              label={label} 
+              labelClassName={className} 
+            />
           </li>
         ))}
       </ul>
-      <TLF unasignAll={unasignAll} asign={asign} reset={reset} load={load} items={items} draggingItem={draggingItem} tiersRef={tiersRef} setDraggingItem={setDraggingItem} />
+      <TierMakerForm tiersRef={tiersRef} />
     </main>
   )
 }
