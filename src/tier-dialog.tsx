@@ -2,6 +2,7 @@ import { FormEvent, useRef } from 'react'
 import { Dialog } from './dialog'
 import { Tier, useTierMakerStore } from './tier-maker-store'
 import { IconSettings, IconX } from '@tabler/icons-react'
+import { error, toast, Toaster } from './toast'
 
 export function TierDialog({
   item,
@@ -12,6 +13,8 @@ export function TierDialog({
   const updateTier = useTierMakerStore(s => s.updateTier)
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+    console.log('submit')
+    
     event.preventDefault()
     event.stopPropagation()
     const formData = new FormData(event.currentTarget)
@@ -23,17 +26,21 @@ export function TierDialog({
       color?: string
     }
     const trimmedLabel = label?.trim()
+    if (trimmedLabel == null || trimmedLabel === '') {
+      return error({ message: 'Label is required', toasterId: item.id })
+    }
     const trimmedColor = color?.trim()
-    if (trimmedLabel == null || trimmedColor == null || trimmedLabel === '' || trimmedColor === '') {
-      return
+    if (trimmedLabel == null || trimmedColor == null) {
+      return error({ message: 'Color is required', toasterId: item.id })
     }
     if (trimmedLabel.length > 3) {
-      return
+      return error({ message: 'Label must be 3 characters or less', toasterId: item.id })
     }
     if (!/^#[0-9a-f]{6}$/i.test(trimmedColor)) {
-      return
+      return error({ message: 'Color must be a valid hex color', toasterId: item.id })
     }
     updateTier(item.id, { label: trimmedLabel, color: trimmedColor })
+    toast({ message: 'Tier updated' })
     ref.current?.close()
   }
 
@@ -83,6 +90,7 @@ export function TierDialog({
             </button>
           </form>
         </div>
+        <Toaster id={item.id} />
       </Dialog>
       <div className='absolute right-0 inset-y-0 flex items-center justify-center p-2'>
         <button

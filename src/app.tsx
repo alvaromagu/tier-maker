@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { TierMakerForm } from './tier-maker-form'
 import { TierMakerRow } from './tier-maker-row'
 import { useTierMakerStore } from './tier-maker-store'
+import { Toaster } from './toast'
 
 function App() {
   const tiersRef = useRef<HTMLUListElement>(null)
@@ -24,6 +25,7 @@ function App() {
         </ul>
         <TierMakerForm tiersRef={tiersRef} />
       </main>
+      <Toaster />
     </>
   )
 }
