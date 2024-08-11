@@ -53,6 +53,7 @@ export function TierMakerForm({
   }
 
   const showPreview = preview?.item != null && preview?.item?.tier !== undefined && preview?.on === undefined
+  
 
   return (
     <form className='flex flex-1 flex-col p-2'>
