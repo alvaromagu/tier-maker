@@ -3,6 +3,7 @@ import { Dialog } from './dialog'
 import { Tier, useTierMakerStore } from './tier-maker-store'
 import { IconSettings, IconX } from '@tabler/icons-react'
 import { toast, Toaster } from './toast'
+import { Button } from './button'
 
 export function TierDialog({
   item,
@@ -52,13 +53,12 @@ export function TierDialog({
             <h2 className='flex-1 text-xl font-bold'>
               Tier Settings
             </h2>
-            <button
+            <Button
               type='button'
-              className='dark:bg-zinc-900 rounded-full p-2'
               onClick={() => ref.current?.close()}
             >
               <IconX className='size-4' />
-            </button>
+            </Button>
           </header>
           <form className='flex flex-col gap-4 mt-2 group' onSubmit={handleSubmit}>
             <label>
@@ -82,23 +82,22 @@ export function TierDialog({
                 required
               />
             </label>
-            <button
+            <Button
               type='submit'
-              className='w-full p-2 mt-2 dark:bg-zinc-900 rounded'
+              className='w-full mt-2'
             >
               Save
-            </button>
+            </Button>
           </form>
         </div>
         <Toaster id={item.id} />
       </Dialog>
-      <button
+      <Button
         type='button'
-        className='dark:bg-zinc-900 rounded-full p-2'
         onClick={() => ref.current?.showModal()}
       >
         <IconSettings className='size-4' />
-      </button>
+      </Button>
     </>
   )
 }

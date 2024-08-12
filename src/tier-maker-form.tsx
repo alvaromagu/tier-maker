@@ -3,6 +3,7 @@ import { IconArrowDown, IconPhotoDown, IconPhotoPlus, IconRestore } from '@table
 import { TierListItem, useTierMakerStore } from './tier-maker-store'
 import { parseFiles } from './utils'
 import html2canvas from 'html2canvas-pro'
+import { Button } from './button'
 
 export function TierMakerForm({
   tiersRef
@@ -58,23 +59,23 @@ export function TierMakerForm({
   return (
     <form className='flex flex-1 flex-col p-2'>
       <div className='flex justify-center gap-2 mb-2'>
-        <label className='dark:bg-zinc-900 rounded-full p-2'>
+        <label className='bg-blue-400 dark:bg-blue-900 rounded-full p-2'>
           <IconPhotoPlus className='size-4' />
           <input onChange={handleInputChange} name='images' type='file' multiple accept='image/*' className='hidden' />
         </label>
-        <button type='button' onClick={unasignAll} className='dark:bg-zinc-900 rounded-full p-2'>
+        <Button type='button' onClick={unasignAll}>
           <IconArrowDown className='size-4' />
-        </button>
-        <button type='button' onClick={download} className='dark:bg-zinc-900 rounded-full p-2'>
+        </Button>
+        <Button type='button' onClick={download}>
           <IconPhotoDown className='size-4' />
-        </button>
-        <button type='button' onClick={reset} className='dark:bg-zinc-900 rounded-full p-2'>
+        </Button>
+        <Button type='button' onClick={reset}>
           <IconRestore className='size-4' />
-        </button>
+        </Button>
       </div>
 
       <div
-        className='bg-zinc-900 flex-1 p-2 flex gap-2 flex-wrap'
+        className='dark:bg-zinc-900 flex-1 p-2 flex gap-2 flex-wrap'
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}

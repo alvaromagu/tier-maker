@@ -3,6 +3,7 @@ import { Dialog } from './dialog'
 import { IconTableDown, IconX } from '@tabler/icons-react'
 import { toast, Toaster } from './toast'
 import { useTierMakerStore } from './tier-maker-store'
+import { Button } from './button'
 
 export function AddTierDialog({
   from,
@@ -57,13 +58,11 @@ export function AddTierDialog({
             <h2 className='flex-1 text-xl font-bold'>
               Tier Settings
             </h2>
-            <button
-              type='button'
-              className='dark:bg-zinc-900 rounded-full p-2'
-              onClick={() => ref.current?.close()}
-            >
+            <Button onClick={() => {
+              ref.current?.close()
+            }}>
               <IconX className='size-4' />
-            </button>
+            </Button>
           </header>
           <form className='flex flex-col gap-4 mt-2 group' onSubmit={handleSubmit}>
             <label>
@@ -87,36 +86,34 @@ export function AddTierDialog({
                 required
               />
             </label>
-            <button
+            <Button
               type='submit'
-              className='w-full p-2 mt-2 dark:bg-zinc-900 rounded'
+              className='w-full mt-2 rounded'
             >
               Save
-            </button>
+            </Button>
           </form>
         </div>
         <Toaster id={`add-tier-${from}`} />
       </Dialog>
-      <button
+      <Button
         type='button'
-        className='dark:bg-zinc-900 rounded-full p-2'
         onClick={() => {
           positionRef.current = 'before'
           ref.current?.showModal()
         }}
       >
         <IconTableDown className='size-4 rotate-180' />
-      </button>
-      <button
+      </Button>
+      <Button
         type='button'
-        className='dark:bg-zinc-900 rounded-full p-2'
         onClick={() => {
           positionRef.current = 'after'
           ref.current?.showModal()
         }}
       >
         <IconTableDown className='size-4' />
-      </button>
+      </Button>
     </>
   )
 }
