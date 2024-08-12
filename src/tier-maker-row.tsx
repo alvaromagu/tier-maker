@@ -2,6 +2,7 @@ import { DragEvent } from 'react'
 import { Tier, TierListItem, useTierMakerStore } from './tier-maker-store'
 import { contrast } from './utils'
 import { TierDialog } from './tier-dialog'
+import { AddTierDialog } from './add-tier-dialog'
 
 export function TierMakerRow({
   tier
@@ -66,7 +67,10 @@ export function TierMakerRow({
             className='size-16 object-cover pointer-events-none'
           />
         )}
-        <TierDialog item={tier} />
+        <div className='absolute right-0 inset-y-0 flex items-center justify-center gap-2 p-2'>
+          <TierDialog item={tier} />
+          <AddTierDialog from={tier.id} />
+        </div>
       </div>
     </section>
   )

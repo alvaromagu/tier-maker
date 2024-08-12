@@ -12,6 +12,8 @@ export type Tier = {
   color: string // hex color
 }
 
+type AfterBefore = { afterId: string } | { beforeId: string }
+
 interface TierMakerStore {
   items: TierListItem[]
   preview: {
@@ -25,6 +27,7 @@ interface TierMakerStore {
   reset: () => void
   setPreview: (item: TierMakerStore['preview']) => void
   updateTier: (id: Tier['id'], obj: Omit<Tier, 'id'>) => void
+  addTier: (tier: Omit<Tier, 'id'>, positionId: AfterBefore) => void
 }
 
 const defaultTiers: Tier[] = [
@@ -39,10 +42,10 @@ export const useTierMakerStore = create<TierMakerStore>()(set => ({
   items: new Array<TierListItem>(),
   preview: undefined,
   tiers: defaultTiers,
-  load: (sources: string[]) => set(state => ({
+  load: sources => set(state => ({
     items: [...state.items, ...sources.map(src => ({ id: crypto.randomUUID(), src, tier: undefined }))],
   })),
-  asign: (id: TierListItem['id'], tierId: TierListItem['tier']) => set(state => ({
+  asign: (id, tierId) => set(state => ({
     items: state.items.map(item => item.id === id ? { ...item, tier: tierId } : item)
   })),
   unasignAll: () => set(state => ({
@@ -50,7 +53,15 @@ export const useTierMakerStore = create<TierMakerStore>()(set => ({
   })),
   reset: () => set({ items: [] }),
   setPreview: (preview: TierMakerStore['preview']) => set({ preview }),
-  updateTier: (id: Tier['id'], obj: Omit<Tier, 'id'>) => set(state => ({
+  updateTier: (id, obj) => set(state => ({
     tiers: state.tiers.map(tier => tier.id === id ? { ...obj, id } : tier)
   })),
+  addTier: (tier, positionId) => set(state => {
+    const newTier = { ...tier, id: crypto.randomUUID() }
+    const index = state.tiers.findIndex(tier => 'beforeId' in positionId ? tier.id === positionId.beforeId : tier.id === positionId.afterId)
+    const tiers = [...state.tiers]
+    if ('beforeId' in positionId) tiers.splice(index, 0, newTier)
+    else tiers.splice(index + 1, 0, newTier)
+    return { tiers }
+  })
 }))

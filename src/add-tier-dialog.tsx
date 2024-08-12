@@ -1,20 +1,24 @@
 import { FormEvent, useRef } from 'react'
 import { Dialog } from './dialog'
-import { Tier, useTierMakerStore } from './tier-maker-store'
-import { IconSettings, IconX } from '@tabler/icons-react'
+import { IconTableDown, IconX } from '@tabler/icons-react'
 import { toast, Toaster } from './toast'
+import { useTierMakerStore } from './tier-maker-store'
 
-export function TierDialog({
-  item,
+export function AddTierDialog({
+  from,
 }: {
-  item: Tier
+  from: string
 }) {
   const ref = useRef<HTMLDialogElement>(null)
-  const updateTier = useTierMakerStore(s => s.updateTier)
+  const positionRef = useRef<'before' | 'after' | null>(null)
+  const addTier = useTierMakerStore(s => s.addTier)
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
-    console.log('submit')
-    
+    if (positionRef.current == null) {
+      ref.current?.close()
+      return
+    }
+
     event.preventDefault()
     event.stopPropagation()
     const formData = new FormData(event.currentTarget)
@@ -27,20 +31,21 @@ export function TierDialog({
     }
     const trimmedLabel = label?.trim()
     if (trimmedLabel == null || trimmedLabel === '') {
-      return toast.error({ message: 'Label is required', toasterId: item.id })
+      return toast.error({ message: 'Label is required', toasterId: `add-tier-${from}` })
     }
     const trimmedColor = color?.trim()
     if (trimmedLabel == null || trimmedColor == null) {
-      return toast.error({ message: 'Color is required', toasterId: item.id })
+      return toast.error({ message: 'Color is required', toasterId: `add-tier-${from}` })
     }
     if (trimmedLabel.length > 3) {
-      return toast.error({ message: 'Label must be 3 characters or less', toasterId: item.id })
+      return toast.error({ message: 'Label must be 3 characters or less', toasterId: `add-tier-${from}` })
     }
     if (!/^#[0-9a-f]{6}$/i.test(trimmedColor)) {
-      return toast.error({ message: 'Color must be a valid hex color', toasterId: item.id })
+      return toast.error({ message: 'Color must be a valid hex color', toasterId: `add-tier-${from}` })
     }
-    updateTier(item.id, { label: trimmedLabel, color: trimmedColor })
-    toast.success({ message: 'Tier updated' })
+    const position = positionRef.current === 'before' ? { beforeId: from } : { afterId: from }
+    addTier({ label: trimmedLabel, color: trimmedColor }, position)
+    toast.success({ message: 'Tier added' })
     ref.current?.close()
   }
 
@@ -65,7 +70,7 @@ export function TierDialog({
               <span>Tier Label</span>
               <input
                 type='text'
-                defaultValue={item.label}
+                placeholder='Tier: S'
                 name='label'
                 className='w-full p-2 dark:bg-zinc-900 rounded'
                 required
@@ -76,7 +81,7 @@ export function TierDialog({
               <span>Tier Color</span>
               <input
                 type='color'
-                defaultValue={item.color}
+                placeholder='#ff0000'
                 name='color'
                 className='w-full dark:bg-zinc-900 rounded'
                 required
@@ -90,14 +95,27 @@ export function TierDialog({
             </button>
           </form>
         </div>
-        <Toaster id={item.id} />
+        <Toaster id={`add-tier-${from}`} />
       </Dialog>
       <button
         type='button'
         className='dark:bg-zinc-900 rounded-full p-2'
-        onClick={() => ref.current?.showModal()}
+        onClick={() => {
+          positionRef.current = 'before'
+          ref.current?.showModal()
+        }}
       >
-        <IconSettings className='size-4' />
+        <IconTableDown className='size-4 rotate-180' />
+      </button>
+      <button
+        type='button'
+        className='dark:bg-zinc-900 rounded-full p-2'
+        onClick={() => {
+          positionRef.current = 'after'
+          ref.current?.showModal()
+        }}
+      >
+        <IconTableDown className='size-4' />
       </button>
     </>
   )

@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { IconAlertTriangle, IconCheck, IconInfoSmall, IconX } from '@tabler/icons-react'
+import { IconCheck, IconX } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
 import { create } from 'zustand'
 
@@ -8,7 +8,7 @@ type Toast = {
   id: string
   message: string
   duration?: number
-  type?: 'info' | 'success' | 'warning' | 'error'
+  type?: 'success' | 'error'
 }
 
 type ToastsStore = {
@@ -26,10 +26,11 @@ const useToastsStore = create<ToastsStore>()((set) => ({
 }))
 
 
-export const toast = (toast: Omit<Toast, 'type' | 'id'>) => useToastsStore.getState().show({ ...toast, type: 'info' })
-export const error = (toast: Omit<Toast, 'type' | 'id'>) => useToastsStore.getState().show({ ...toast, type: 'error' })
-export const warning = (toast: Omit<Toast, 'type' | 'id'>) => useToastsStore.getState().show({ ...toast, type: 'warning' })
-export const success = (toast: Omit<Toast, 'type' | 'id'>) => useToastsStore.getState().show({ ...toast, type: 'success' })
+const error = (toast: Omit<Toast, 'type' | 'id'>) => useToastsStore.getState().show({ ...toast, type: 'error' })
+const success = (toast: Omit<Toast, 'type' | 'id'>) => useToastsStore.getState().show({ ...toast, type: 'success' })
+export const toast = {
+  error, success
+}
 
 export function Toaster({
   id
@@ -39,7 +40,7 @@ export function Toaster({
   const toasts = useToastsStore((state) => state.toasts.filter((t) => t.toasterId === id))  
 
   return (
-    <div className='flex flex-col gap-2 items-end fixed bottom-0 right-0 p-2'>
+    <div className='flex flex-col gap-2 items-end fixed bottom-0 right-0 p-4'>
       {toasts.map((toast) => (
         <Toast key={toast.id} toast={toast} />
       ))}
@@ -48,19 +49,9 @@ export function Toaster({
 }
 
 const typeIcon = {
-  info: (
-    <span className='bg-blue-400 rounded-full size-5 flex items-center justify-center'>
-      <IconInfoSmall size={16} />
-    </span>
-  ),
   success: (
-    <span className='bg-green-400 rounded-full size-5 flex items-center justify-center'>
+    <span className='bg-green-400 dark:text-black rounded-full size-5 flex items-center justify-center'>
       <IconCheck size={16} />
-    </span>
-  ),
-  warning: (
-    <span className='bg-yellow-400 rounded-full size-5 flex items-center justify-center'>
-      <IconAlertTriangle size={16} />
     </span>
   ),
   error: (
@@ -95,14 +86,19 @@ function Toast({ toast }: { toast: Toast }) {
     }
   }, [isHiding, hide, toast])
 
+  function dismiss() {
+    setIsHiding(true)
+  }
+
   const icon = toast.type ? typeIcon[toast.type] : null
 
   return (
     <div
       ref={toastRef}
-      className={`dark:bg-zinc-950 px-4 py-2 rounded transition-opacity flex gap-4 items-center ${
+      className={`dark:bg-zinc-950 px-4 py-2 rounded transition-opacity flex gap-4 items-center shadow-xl ${
         isHiding ? 'opacity-0' : 'opacity-100'
-      }`}
+      } border`}
+      onClick={dismiss}
     >
       {icon}
       <span className='flex-1'>{toast.message}</span>
