@@ -96,24 +96,26 @@ export function AddTierDialog({
         </div>
         <Toaster id={`add-tier-${from}`} />
       </Dialog>
-      <Button
-        type='button'
-        onClick={() => {
-          positionRef.current = 'before'
-          ref.current?.showModal()
-        }}
-      >
-        <IconTableDown className='size-4 rotate-180' />
-      </Button>
-      <Button
-        type='button'
-        onClick={() => {
-          positionRef.current = 'after'
-          ref.current?.showModal()
-        }}
-      >
-        <IconTableDown className='size-4' />
-      </Button>
+      <div className='flex flex-col gap-2 items-center justify-center'>
+        <Button
+          type='button'
+          onClick={() => {
+            positionRef.current = 'before'
+            ref.current?.showModal()
+          }}
+        >
+          <IconTableDown className='size-4 rotate-180' />
+        </Button>
+        <Button
+          type='button'
+          onClick={() => {
+            positionRef.current = 'after'
+            ref.current?.showModal()
+          }}
+        >
+          <IconTableDown className='size-4' />
+        </Button>
+      </div>
     </>
   )
 }

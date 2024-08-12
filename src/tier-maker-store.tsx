@@ -28,6 +28,8 @@ interface TierMakerStore {
   setPreview: (item: TierMakerStore['preview']) => void
   updateTier: (id: Tier['id'], obj: Omit<Tier, 'id'>) => void
   addTier: (tier: Omit<Tier, 'id'>, positionId: AfterBefore) => void
+  moveUp: (id: Tier['id']) => void
+  moveDown: (id: Tier['id']) => void
 }
 
 const defaultTiers: Tier[] = [
@@ -63,5 +65,21 @@ export const useTierMakerStore = create<TierMakerStore>()(set => ({
     if ('beforeId' in positionId) tiers.splice(index, 0, newTier)
     else tiers.splice(index + 1, 0, newTier)
     return { tiers }
-  })
+  }),
+  moveUp: id => set(state => {
+    const index = state.tiers.findIndex(tier => tier.id === id)
+    if (index === 0) return {}
+    const tiers = [...state.tiers]
+    const [removed] = tiers.splice(index, 1)
+    tiers.splice(index - 1, 0, removed)
+    return { tiers }
+  }),
+  moveDown: id => set(state => {
+    const index = state.tiers.findIndex(tier => tier.id === id)
+    if (index === state.tiers.length - 1) return {}
+    const tiers = [...state.tiers]
+    const [removed] = tiers.splice(index, 1)
+    tiers.splice(index + 1, 0, removed)
+    return { tiers }
+  }),
 }))

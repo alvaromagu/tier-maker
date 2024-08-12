@@ -3,13 +3,15 @@ import { Tier, TierListItem, useTierMakerStore } from './tier-maker-store'
 import { contrast } from './utils'
 import { TierDialog } from './tier-dialog'
 import { AddTierDialog } from './add-tier-dialog'
+import { Button } from './button'
+import { IconArrowBarUp } from '@tabler/icons-react'
 
 export function TierMakerRow({
   tier
 }: {
   tier: Tier
 }) {
-  const { items, asign, preview, setPreview } = useTierMakerStore()
+  const { items, asign, preview, setPreview, moveUp, moveDown } = useTierMakerStore()
 
   function handleDrop(event: DragEvent<HTMLElement>): void {
     event.preventDefault()
@@ -43,7 +45,7 @@ export function TierMakerRow({
       className='flex relative'
     >
       <div
-        className='aspect-square w-16 grid place-content-center'
+        className='aspect-square w-24 grid place-content-center'
         style={{ backgroundColor: tier.color, color: textColor }}
       >
         {tier.label}
@@ -70,6 +72,14 @@ export function TierMakerRow({
         <div className='absolute right-0 inset-y-0 flex items-center justify-center gap-2 p-2'>
           <TierDialog item={tier} />
           <AddTierDialog from={tier.id} />
+          <div className='flex flex-col gap-2 justify-center items-center'>
+            <Button onClick={() => moveUp(tier.id)}>
+              <IconArrowBarUp className='size-4' />
+            </Button>
+            <Button onClick={() => moveDown(tier.id)}>
+              <IconArrowBarUp className='size-4 rotate-180' />
+            </Button>
+          </div>
         </div>
       </div>
     </section>
